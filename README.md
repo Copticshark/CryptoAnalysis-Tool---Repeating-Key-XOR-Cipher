@@ -1,86 +1,87 @@
-# Cryptanalysis Tool - Repeating Key XOR Cipher
+# XOR Cipher Implementation
 
-This project implements a tool to analyze and decrypt text that has been encrypted using a repeating-key XOR cipher. It uses frequency analysis and statistical methods to determine the key length and decrypt the ciphertext.
+This repository contains an implementation of a repeating-key XOR cipher with both encryption and cryptanalysis capabilities. The system includes functionality for decrypting ciphertext using frequency analysis.
 
-## Files
+## Files Overview
 
-- `cse108_hw2_asharkaw.py`: Main implementation file containing the cryptanalysis algorithm
-- `plaintext.py`: A helper script to decrypt the ciphertext when the key is known
-- `cipher.txt`: The encrypted text file (not shown in the provided files)
-- `key.txt`: Contains encrypted or key-related data
+- `plaintext.py`: Simple decryption script using a known key
+- `cse108_hw2_asharkaw.py`: Advanced cryptanalysis script using frequency analysis
+- `cipher.txt`: Input ciphertext file (hex-encoded)
+- `key.txt`: Sample encryption key file
+- `decrypted.txt`: Output of decryption attempt
 
 ## How It Works
 
-1. **Key Length Detection**:
-   - Uses frequency analysis to determine the most likely key length
-   - Analyzes character frequencies in different offsets of the ciphertext
-   - Calculates Index of Coincidence (IoC) for different key lengths
+### Basic Decryption (`plaintext.py`)
+If you have the correct key, you can use the simple decryption script which:
+1. Reads hex-encoded ciphertext from `cipher.txt`
+2. XORs each byte with the corresponding byte from the repeating key
+3. Outputs the decrypted ASCII text
 
-2. **Letter Frequency Analysis**:
-   - Uses English letter frequencies (stored in array `q`)
-   - Analyzes each position in the key separately
-   - Scores possible key bytes based on resulting plaintext character frequencies
+### Cryptanalysis (`cse108_hw2_asharkaw.py`)
+The cryptanalysis script attempts to break the cipher without knowing the key by:
+1. Determining the likely key length using frequency analysis
+2. Breaking the ciphertext into streams based on the key length
+3. Analyzing each stream using English letter frequencies
+4. Reconstructing the key by finding the most likely byte for each position
 
-3. **Decryption Process**:
-   - Splits ciphertext into streams based on key length
-   - Tests each possible byte value (0-255) for each position in the key
-   - Verifies that decrypted text is printable ASCII
-   - Scores results based on English letter frequencies
+## Setup and Usage
 
-## Usage
+1. Clone the repository and ensure you have Python 3.x installed.
 
+2. To use the basic decryption (with known key):
 ```bash
-# To run the cryptanalysis tool
-python3 cse108_hw2_asharkaw.py
-
-# To decrypt with a known key
-python3 plaintext.py
+python plaintext.py
 ```
+
+3. To attempt cryptanalysis (without knowing the key):
+```bash
+python cse108_hw2_asharkaw.py
+```
+
+## Input Format
+
+- The ciphertext should be stored in `cipher.txt` as hex-encoded text
+- One line per input, no spaces
+- Example format: `F94720DC5BD9F775FD74C14661D60FD7...`
 
 ## Implementation Details
 
-### Main Components
+### Key Features
+- XOR-based encryption/decryption
+- Key length detection using index of coincidence
+- English letter frequency analysis
+- Printable ASCII validation
+- Stream separation for cryptanalysis
 
-1. **Frequency Analysis**:
+### Frequency Analysis
+The script uses standard English letter frequencies:
 ```python
-frequencies = [0] * 256
-for ch in ptext[start::l]:
-    frequencies[ch] += 1
+'a': 0.082, 'b': 0.015, 'c': 0.028, ...
 ```
 
-2. **English Letter Frequencies**:
-- Stored in array `q`
-- Used for scoring potential decryptions
+These frequencies are used to score potential decryptions and identify the most likely key bytes.
 
-3. **Key Finding**:
-```python
-def bestByte(stream):
-    # Tests all possible bytes (0-255)
-    # Returns the byte that produces the most likely English text
-```
+## Security Considerations
 
-### Helper Functions
+This implementation is for educational purposes. Some important notes:
+- XOR ciphers with repeating keys are vulnerable to frequency analysis
+- The implementation assumes ASCII encoding and English plaintext
+- No padding or additional security measures are implemented
 
-- `read_hex_file()`: Reads hex-encoded ciphertext
-- `decrypt()`: Performs XOR decryption
-- `allPrintable()`: Verifies if decrypted text is valid ASCII
-- `byteToString()`: Converts byte arrays to strings
+## Error Handling
 
-## Known Key Version
+The scripts include basic error handling for:
+- File I/O operations
+- Hex decoding
+- Character encoding issues
 
-The `plaintext.py` script contains a simpler version that decrypts the text using a known key:
-```python
-key = bytes([0xAE, 0x22, 0x00, 0xAF, 0x2F, 0xB8, 0x99, 0x11, 0xDD, 0x00])
-```
+## Dependencies
+- Python 3.x
+- No external libraries required
 
-## Technical Theory
-
-This tool breaks a repeating-key XOR cipher using:
-1. Kasiski examination principles to find key length
-2. Frequency analysis to determine individual key bytes
-3. Statistical analysis of English text patterns
-4. Validation of printable ASCII characters
-
-The algorithm is based on the fact that English text has predictable letter frequencies, and XOR encryption with a repeating key creates patterns that can be analyzed.
-
-Would you like me to explain any particular aspect in more detail? For example, I could dive deeper into the frequency analysis or explain how the key length detection works.
+## Contributing
+When adding features or fixes:
+1. Maintain the existing error handling patterns
+2. Document any new frequency analysis approaches
+3. Update the test files if modifying the core logic
